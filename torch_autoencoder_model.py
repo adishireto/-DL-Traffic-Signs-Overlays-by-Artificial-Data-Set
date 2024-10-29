@@ -56,6 +56,16 @@ class Autoencoder(nn.Module):
         ])
 
     def forward(self, x):
+        """
+        Forward pass of the model.
+
+        Args:
+            x (torch.Tensor): The input tensor.
+
+        Returns:
+            torch.Tensor: The output tensor.
+
+        """
         skips = []
         for layer in self.encoder:
             x = layer(x)
@@ -89,7 +99,19 @@ class CustomImageFolder(ImageFolder):
 
 
 def visualize_training(masks, images, outputs, epoch, save_path):
-    """Save and display a batch of masks, target images, and outputs."""
+    """
+    Save and display a batch of masks, target images, and outputs.
+
+    Args:
+        masks (torch.Tensor): The input masks.
+        images (torch.Tensor): The input images.
+        outputs (torch.Tensor): The output images.
+        epoch (int): The current epoch.
+        save_path (str): The path to save the visualization.
+
+    Returns:
+        None
+    """
     # Unormalize and save images for visualization
     masks_grid = vutils.make_grid(masks.cpu(), normalize=True, scale_each=True)
     images_grid = vutils.make_grid(images.cpu(), normalize=True, scale_each=True)
@@ -116,6 +138,22 @@ def visualize_training(masks, images, outputs, epoch, save_path):
 
 
 def save_parameters(lr, step_size, gamma, batch_size, kernel_size, file_path, alpha, beta):
+    """
+    Save the given parameters to a file.
+
+    Args:
+        lr (float): The learning rate.
+        step_size (int): The step size.
+        gamma (float): The gamma value.
+        batch_size (int): The batch size.
+        kernel_size (int): The kernel size.
+        file_path (str): The path to the file.
+        alpha (float): The alpha value.
+        beta (float): The beta value.
+
+    Returns:
+        None
+    """
     with open(file_path, 'w') as f:
         f.write(f'Learning Rate (lr): {lr}\n')
         f.write(f'Step Size (step_size): {step_size}\n')
@@ -126,12 +164,38 @@ def save_parameters(lr, step_size, gamma, batch_size, kernel_size, file_path, al
         f.write(f'beta Size (beta_size): {beta}\n')
 
 def save_epoch_result(epoch, num_epochs, epoch_loss, epoch_ssim, val_loss, val_ssim, file_path):
+    """
+    Save the results of an epoch to a file.
+
+    Args:
+        epoch (int): The current epoch.
+        num_epochs (int): The total number of epochs.
+        epoch_loss (float): The loss value for the current epoch.
+        epoch_ssim (float): The SSIM value for the current epoch.
+        val_loss (float): The loss value for the validation set.
+        val_ssim (float): The SSIM value for the validation set.
+        file_path (str): The path to the file where the results will be saved.
+
+    Returns:
+        None
+    """
     with open(file_path, 'a') as f:
         f.write(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {epoch_loss:.8f}, Training SSIM: {epoch_ssim:.4f}\n')
         f.write(f'Validation Loss: {val_loss:.8f}, Validation SSIM: {val_ssim:.4f}\n')
 
 
 def split_dataset(dataset, train_ratio=0.7, valid_ratio=0.2):
+    """
+    Split a dataset into training, validation, and testing subsets.
+
+    Parameters:
+        dataset (Dataset): The dataset to be split.
+        train_ratio (float, optional): The ratio of samples to be used for training. Defaults to 0.7.
+        valid_ratio (float, optional): The ratio of samples to be used for validation. Defaults to 0.2.
+
+    Returns:
+        Tuple[Subset, Subset, Subset]: A tuple containing the training dataset, validation dataset, and testing dataset.
+    """
     total_samples = len(dataset)
     train_size = int(train_ratio * total_samples)
     valid_size = int(valid_ratio * total_samples)
@@ -149,6 +213,20 @@ def split_dataset(dataset, train_ratio=0.7, valid_ratio=0.2):
 
 
 def main():
+    """
+    Trains an autoencoder model using the given dataset.
+
+    This function trains an autoencoder model using the provided dataset. It sets up the necessary paths, 
+    defines the autoencoder model, loads the datasets, and creates the necessary DataLoaders. 
+    The function then trains the model, evaluates the training and validation performance, and saves the results. 
+    Finally, it saves the loss and SSIM graphs.
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
     mp.set_start_method('spawn', force=True)
     start_time = time.time()
 
