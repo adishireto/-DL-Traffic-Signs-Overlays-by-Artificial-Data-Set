@@ -13,6 +13,29 @@ from torch_autoencoder_model import Autoencoder
 
 def reconstruct_video(video_name, model_path, videos_mask_path, mask_frames_path,
                       frames_reconstruct_path, image_location_path, video_reconstruct_path):
+    """
+    Reconstructs a video from a mask video file.
+
+    Args:
+        video_name (str): The name of the video.
+        model_path (str): The path to the autoencoder model.
+        videos_mask_path (str): The path to the folder containing the mask video.
+        mask_frames_path (str): The path to the folder where the extracted frames will be saved.
+        frames_reconstruct_path (str): The path to the folder where the reconstructed frames will be saved.
+        image_location_path (str): The path to the folder containing the location information.
+        video_reconstruct_path (str): The path to the reconstructed video.
+
+    Returns:
+        None
+
+    Notes:
+        - The function reconstructs a video from a mask video file.
+        - It extracts frames from the mask video using FFMPEG.
+        - It processes each frame to reconstruct the original image.
+        - It saves the reconstructed frames in the specified folder.
+        - It creates a video from the reconstructed frames using FFMPEG.
+
+    """
     # Check GPU availability
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     autoencoder = Autoencoder().to(device)
