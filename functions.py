@@ -15,6 +15,19 @@ import ffmpeg
 
 
 def count_items_in_folder(folder_path):
+    """
+    Count the number of items in a folder.
+
+    Args:
+        folder_path (str): The path to the folder.
+
+    Returns:
+        int: The number of items in the folder.
+
+    Raises:
+        FileNotFoundError: If the folder does not exist.
+        PermissionError: If the user does not have permission to access the folder.
+    """
     try:
         items = os.listdir(folder_path)
         return len(items)
@@ -25,6 +38,21 @@ def count_items_in_folder(folder_path):
 
 
 def split_folder_by_percentage(input_folder, test_dir, train_dir, percentage):
+    """
+    Splits a folder into two sub-folders based on a percentage.
+
+    Args:
+        input_folder (str): The path to the input folder.
+        test_dir (str): The path to the test folder.
+        train_dir (str): The path to the train folder.
+        percentage (float): The percentage of items to put in the test folder.
+
+    Returns:
+        None
+
+    Raises:
+        None
+    """
     # Ensure the output folders exist
     if not os.path.exists(test_dir):
         os.makedirs(test_dir)
@@ -57,6 +85,20 @@ def split_folder_by_percentage(input_folder, test_dir, train_dir, percentage):
 
 
 def resize_images(input_folder, size=(1024, 1024)):
+    """
+    Resizes all images in the specified input folder to the given size and saves them as PNG files.
+
+    Args:
+        input_folder (str): The path to the folder containing the images.
+        size (tuple, optional): The size to resize the images to. Defaults to (1024, 1024).
+
+    Returns:
+        None
+
+    Raises:
+        Exception: If there is an error resizing an image.
+
+    """
     # List files in input folder
     files = os.listdir(input_folder)
 
@@ -84,6 +126,21 @@ def resize_images(input_folder, size=(1024, 1024)):
 
 
 def apply_projective_transformation(image_path, src_points, dst_points):
+    """
+    Apply a projective transformation to an image.
+
+    Args:
+        image_path (str): The path to the image file.
+        src_points (List[List[float]]): The source points for the transformation.
+        dst_points (List[List[float]]): The destination points for the transformation.
+
+    Returns:
+        numpy.ndarray: The transformed image.
+
+    Raises:
+        ValueError: If the image is not found or the path is incorrect.
+
+    """
     # Load the image
     image = cv2.imread(image_path)
     if image is None:
@@ -108,6 +165,9 @@ def apply_projective_transformation(image_path, src_points, dst_points):
 def ensure_folder_exists(folder_path):
     """
     Ensure that a folder exists. If it doesn't exist, create it.
+
+    Args:
+        folder_path (str): The path to the folder.
     """
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
@@ -117,6 +177,16 @@ def ensure_folder_exists(folder_path):
 
 
 def calc_iou(new_mask, comparison_dataset):
+    """
+    Calculate the Intersection over Union (IoU) score between a new mask and a set of comparison masks.
+
+    Args:
+        new_mask (numpy.ndarray): The new mask to compare.
+        comparison_dataset (list of numpy.ndarray): The set of comparison masks.
+
+    Returns:
+        float: The IoU score, which is the average of the intersection over union areas.
+    """
     iou_score = 0
     for j, mask in enumerate(comparison_dataset):
         intersection = cv2.bitwise_and(new_mask, mask)
@@ -129,6 +199,25 @@ def calc_iou(new_mask, comparison_dataset):
 
 
 def create_shape(image, mask, color, shape_type, roundness=0.0, increase_factor=1.1, border_padding=5):
+    """
+    Creates a shape based on the given image, mask, color, and shape type.
+
+    Args:
+        image (np.ndarray): The input image.
+        mask (np.ndarray): The binary mask of the shape.
+        color (List[int]): The color of the shape.
+        shape_type (str): The type of the shape. Can be 'circle', 'oval', 'octagon', or 'triangle'.
+        roundness (float, optional): The roundness of the shape. Defaults to 0.0.
+        increase_factor (float, optional): The factor to increase the shape. Defaults to 1.1.
+        border_padding (int, optional): The padding of the shape from the border. Defaults to 5.
+
+    Returns:
+        np.ndarray: The colored shape.
+
+    Notes:
+        - If the contour has less than 5 points, it prints "Contour has less than 5 points, cannot fit ellipse." and returns a zero-filled image.
+        - If no contours are found, it prints "No contours found." and returns a zero-filled image.
+    """
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     if not contours:
         print("No contours found.")
@@ -214,6 +303,26 @@ def create_shape(image, mask, color, shape_type, roundness=0.0, increase_factor=
 
 
 def process_image(image, color, label):
+    """
+    Process an image to create a final result with a colored shape on a black background.
+
+    Args:
+        image (np.ndarray): The input image.
+        color (List[int]): The color of the shape.
+        label (str): The label of the shape. Can be 'stop_sign', 'give_way_sign', or 'no_entry_sign'.
+
+    Returns:
+        np.ndarray: The final result with the colored shape on a black background.
+
+    Notes:
+        - The function creates a binary mask for the non-black color in the input image.
+        - It then creates a shape based on the mask and the color.
+        - The shape is either an octagon, triangle, or oval, depending on the label.
+        - The function also creates a mask for the specific color.
+        - Finally, it creates the final result by setting the pixels in the mask to the specified color.
+
+    """
+    
     # Define the lower and upper bounds for the color
     lower_bound = np.clip(color, 0, 255)
     upper_bound = np.clip(color, 0, 255)
@@ -241,6 +350,27 @@ def process_image(image, color, label):
 
 
 def create_mask(image, traffic_label, live, main_folder_path):
+    """
+    Create a mask for a specific traffic sign in an image.
+
+    Args:
+        image (np.ndarray): The input image.
+        traffic_label (str): The label of the traffic sign. Can be 'stop_sign', 'give_way_sign', or 'no_entry_sign'.
+        live (bool): Whether the image is live or not.
+        main_folder_path (str): The path to the main folder.
+
+    Returns:
+        bool: Whether a mask was detected or not.
+        np.ndarray: The mask image.
+
+    Notes:
+        - The function creates a binary mask for the specific traffic sign in the input image.
+        - It uses the traffic label to determine the color of the mask.
+        - The function also creates a mask for the specific color.
+        - The function applies morphological operations to clear noise in the mask.
+        - The function determines which mask has the highest IOU.
+        - The function returns the detected mask and the mask image.
+    """
     color_mask = {'stop_sign': [255, 255, 0],
                   'give_way_sign': [255, 0, 255],
                   'no_entry_sign': [0, 255, 255]
@@ -348,6 +478,24 @@ def create_mask(image, traffic_label, live, main_folder_path):
 
 
 def rembg_mask_create(img, color):
+    """
+    Create a mask for a specific color in an image using the `rembg` library.
+
+    Args:
+        img (np.ndarray): The input image.
+        color (List[int]): The RGB color to create the mask for.
+
+    Returns:
+        Tuple[bool, np.ndarray]: A tuple containing a boolean indicating if a mask was detected and the mask image.
+
+    Notes:
+        - The function converts the input image to the RGB color format.
+        - It uses the `rembg` library to create a binary mask for the specific color.
+        - The function applies morphological operations to clear noise in the mask.
+        - The function determines the area of the mask and checks if it is greater than a threshold.
+        - If the area is greater than the threshold, the function sets the pixels in the mask to the specified color.
+
+    """
     detected = False
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # RGB FORMAT
     mask = remove(img, only_mask=True, post_process_mask=True)
@@ -372,7 +520,26 @@ def rembg_mask_create(img, color):
 
 
 def detect_polygon(image, color):
+    """
+    Detect a polygon in an image based on a specified color.
 
+    Args:
+        image (np.ndarray): The input image.
+        color (List[int]): The RGB color to detect the polygon for.
+
+    Returns:
+        bool: Whether a polygon was detected or not.
+        np.ndarray: The binary mask of the detected polygon.
+
+    Notes:
+        - The function converts the input image to grayscale.
+        - It applies Gaussian blur to reduce noise.
+        - It performs edge detection using Canny.
+        - It finds contours in the edge-detected image.
+        - It enlarges the contour slightly by dilating it.
+        - It returns the detected polygon and the binary mask.
+
+    """
     detected = False
     # plt.imshow(image)
     # plt.show()
@@ -461,6 +628,35 @@ def detect_polygon(image, color):
 
 def process_prediction(save_image_and_masks, input_image, prediction, i, classification, device,
                        pred, live, video_name, road_sign_count, main_folder_path):
+    """
+    Process a prediction to create a final result with a colored shape on a black background.
+
+    Args:
+        save_image_and_masks (bool): Whether to save the image and mask.
+        input_image (np.ndarray): The input image.
+        prediction (dict): The prediction dictionary.
+        i (int): The index of the prediction.
+        classification (torch.nn.Module): The classification model.
+        device (torch.device): The device to use.
+        pred (int): The prediction index.
+        live (bool): Whether the image is live or not.
+        video_name (str): The name of the video.
+        road_sign_count (int): The count of road signs.
+        main_folder_path (str): The path to the main folder.
+
+    Returns:
+        None
+
+    Notes:
+        - The function processes a prediction to create a final result.
+        - It extracts the necessary information from the prediction dictionary.
+        - It creates a mask for the specific color.
+        - The function creates a shape based on the mask and the color.
+        - The shape is either an octagon, triangle, or oval, depending on the label.
+        - The function also creates a mask for the specific color.
+        - Finally, it creates the final result by setting the pixels in the mask to the specified color.
+
+    """
     image_original = input_image.copy()
     # Extract the image dimensions
     height, width, _ = input_image.shape
@@ -593,6 +789,24 @@ def process_prediction(save_image_and_masks, input_image, prediction, i, classif
 
 
 def is_close(x_min1, y_min1, x_max1, y_max1, x_min2, y_min2, x_max2, y_max2, threshold=30):
+    """
+    Check if two numbers are close to each other.
+
+    Args:
+        a (float): The first number.
+        b (float): The second number.
+        rel_tol (float, optional): The relative tolerance. Defaults to 1e-09.
+        abs_tol (float, optional): The absolute tolerance. Defaults to 0.0.
+
+    Returns:
+        bool: Whether the numbers are close or not.
+
+    Notes:
+        - The function checks if the absolute difference between a and b is less than or equal to the absolute tolerance.
+        - If the absolute difference is greater than the absolute tolerance, the function checks if the relative difference
+          between a and b is less than or equal to the relative tolerance.
+
+    """
     # Calculate the center of both bounding boxes
     center1_x = (x_min1 + x_max1) / 2
     center1_y = (y_min1 + y_max1) / 2
@@ -607,7 +821,22 @@ def is_close(x_min1, y_min1, x_max1, y_max1, x_min2, y_min2, x_max2, y_max2, thr
 
 
 def save_images_from_loader(loader, save_path):
-    """Save images from the DataLoader to the specified path, creating class-specific subfolders."""
+    """
+    Save images from the DataLoader to the specified path, creating class-specific subfolders.
+
+    Args:
+        loader (DataLoader): The DataLoader to extract images from.
+        save_path (str): The path to save the images.
+
+    Returns:
+        None
+
+    Notes:
+        - The function extracts images from the DataLoader.
+        - It creates subfolders in the save_path for each class.
+        - It saves the images as PNG files in the respective class-specific subfolders.
+
+    """
     ensure_folder_exists(save_path)
     image_save = f'{save_path}/images'
     mask_save = f'{save_path}/masks'
@@ -644,6 +873,22 @@ def save_images_from_loader(loader, save_path):
 
 
 def compute_ssim(original, reconstructed):
+    """
+    Compute the Structural Similarity Index Measure (SSIM) between the original and reconstructed images.
+
+    Parameters:
+        original (torch.Tensor): The original image tensor in NCHW format.
+        reconstructed (torch.Tensor): The reconstructed image tensor in NCHW format.
+
+    Returns:
+        float: The mean SSIM value.
+
+    Notes:
+        - The original and reconstructed images are converted to NHWC format.
+        - The SSIM is computed for each pair of corresponding images.
+        - The mean SSIM value is returned.
+
+    """
     original = original.cpu().numpy().transpose(0, 2, 3, 1)  # Convert to NCHW -> NHWC
     reconstructed = reconstructed.cpu().detach().numpy().transpose(0, 2, 3, 1)  # Convert to NCHW -> NHWC
     ssim_values = [ssim(orig, rec, win_size=11, channel_axis=2, data_range=1.0) for orig, rec in
@@ -652,6 +897,19 @@ def compute_ssim(original, reconstructed):
 
 
 def create_folder_path(video_name, main_folder_path, videos_path):
+    """
+    Create the folder paths for the given video.
+
+    Args:
+        video_name (str): The name of the video.
+        main_folder_path (str): The path to the main folder.
+        videos_path (str): The path to the videos folder.
+
+    Returns:
+        tuple: A tuple containing the paths to the frames, video, frame with mask, video mask, mask frames,
+               frame reconstruct, image location, and video reconstruct folders.
+
+    """
     # part1 folders create
     part1_files_path = f'{main_folder_path}/part1'
     ensure_folder_exists(part1_files_path)
@@ -681,6 +939,27 @@ def create_folder_path(video_name, main_folder_path, videos_path):
 
 
 def extract_frames_using_ffmpeg(video_path, output_folder):
+    """
+    Extracts frames from a video using FFMPEG.
+
+    Args:
+        video_path (str): The path to the video file.
+        output_folder (str): The path to the folder where the extracted frames will be saved.
+
+    Returns:
+        None
+
+    Raises:
+        FileNotFoundError: If the video file does not exist.
+        PermissionError: If the user does not have permission to read the video file.
+
+    Notes:
+        - The function uses FFMPEG to extract frames from the video.
+        - The output folder is created if it does not exist.
+        - The frames are saved in the output folder with the pattern 'frame_%d.png'.
+        - The function uses the full path to the FFMPEG executable.
+
+    """
     # Ensure the output folder exists
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
@@ -698,6 +977,27 @@ def extract_frames_using_ffmpeg(video_path, output_folder):
 
 
 def create_video_using_ffmpeg(folder_path, output_file, frame_rate=30):
+    """
+    Creates a video using FFMPEG.
+
+    Args:
+        folder_path (str): The path to the folder containing the frames.
+        output_file (str): The path to the output video file.
+        frame_rate (int, optional): The frame rate of the video. Defaults to 30.
+
+    Raises:
+        ValueError: If the folder_path does not exist.
+
+    Returns:
+        None
+
+    Notes:
+        - The function uses FFMPEG to create a video from the frames.
+        - The frames are expected to be in the folder_path with the pattern 'frame_%d.png'.
+        - The output video file is saved at the specified output_file path.
+        - The function uses the full path to the FFMPEG executable.
+
+    """
     # Ensure the folder exists
     if not os.path.exists(folder_path):
         raise ValueError(f"Folder '{folder_path}' does not exist.")
