@@ -9,6 +9,22 @@ from models import CNNModel
 
 def video_with_mask(classification_path, frames_path, video_path, frame_with_mask_path,
                     video_name, main_folder_path, videos_mask_path):
+    """
+    Generates a video with masks using the provided classification model and YOLO model.
+
+    Args:
+        classification_path (str): The path to the classification model.
+        frames_path (str): The path to the folder containing the frames.
+        video_path (str): The path to the video.
+        frame_with_mask_path (str): The path to the folder where the frames with masks will be saved.
+        video_name (str): The name of the video.
+        main_folder_path (str): The path to the main folder.
+        videos_mask_path (str): The path to the folder where the video with masks will be saved.
+
+    Returns:
+        None
+
+    """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
     # Load the classification
