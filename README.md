@@ -83,3 +83,60 @@ The project includes two demonstration videos:
 
 - Mask Overlay Video: Displays the vehicle's processed view with masked signs.
 - Reconstructed Sign Video: Shows the remote driver’s view with fully reconstructed signs.
+
+
+Based on the code you’ve shared from `main.py`, here are some observations and necessary adjustments for the instructions:
+
+1. **Directory Setup**:
+   - The code references paths like `traffic_sign_overlays`, `finel_project_github/videos`, `finel_project_github/pytorch_multi_classification_11_09.pth`, and `finel_project_github/torch_autoencoder_final.pth`.
+   - Update the instructions to clarify these paths and where the `.pth` files should be placed.
+
+2. **Dependencies**:
+   - Make sure dependencies like `functions.py`, `video_with_mask.py`, and `reconstruct_video.py` are in the `traffic_sign_overlays` folder, as these files are imported directly in the code.
+
+
+
+# Instructions for Running the Code
+
+1. **Create a Project Directory**:
+   - Begin by creating a folder named traffic_sign_overlays in your preferred location on your computer. This will be the main directory for all required files and models.
+
+     ```bash
+     mkdir -p traffic_sign_overlays
+     ```
+
+2. **Download and Place Required Files**:
+   - Download the following files from the [Google Drive link](https://drive.google.com/drive/folders/1vNAXVxpBt1XPxGVO_tN7Ea5oo7bfWk4w?usp=drive_link):
+     - `pytorch_multi_classification_11_09.pth`
+     - `torch_autoencoder_final_2024.pth`
+     - `videos`
+   - Move these downloaded files into the traffic_sign_overlays folder.
+   - The 'videos' folder contains a video called 'videofile_noentry.yuv' that will be used as an example.
+   - You can add more videos in YUV format to this folder and change the line in the main.py file that says: video_name = 'videofile_noentry' to: video_name = 'your_video_name'
+
+3. **Add Code Files**:
+   - Place the following Python code files in the main `traffic_sign_overlays` folder:
+     - `functions.py`
+     - `main.py`
+     - `models.py`
+     - `reconstruct_video.py`
+     - `torch_autoencoder_model.py`
+     - `video_with_mask.py`
+
+4. **Install Dependencies**:
+   - Open a terminal and navigate to the `traffic_sign_overlays` directory:
+
+     ```bash
+     cd traffic_sign_overlays
+     ```
+
+5. **Run the Code**:
+   - In the terminal, run the `main.py` script to execute the program. This script processes the input video, applies traffic sign masks, and reconstructs the signs.
+
+     ```bash
+     python main.py
+     ```
+
+6. **Output**:
+   - The program will generate videos and processed frames, handling mask overlays and reconstructed traffic signs, which will be stored in the `finel_project_github/part1` and `finel_project_github/part2` folders coresponded to the two main components of the system.
+
