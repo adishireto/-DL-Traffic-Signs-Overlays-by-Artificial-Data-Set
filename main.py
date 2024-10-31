@@ -5,15 +5,13 @@ from reconstruct_video import reconstruct_video
 
 
 # Load files for video with mask
-main_folder_path = r'finel_project_github'
-video_name = 'raw_car'
+main_folder_path = r'traffic_sign_overlays'
+video_name = 'videofile_noentry'
 videos_path = r'finel_project_github/videos'
 ensure_folder_exists(videos_path)
 # Load the classification
-# classification_name = 'pytorch_multi_classification_11_09'
 classification_path = r'finel_project_github/pytorch_multi_classification_11_09.pth'
 classification_file = os.path.join(classification_path)
-# autoencoder_name = 'torch_autoencoder_final'
 autoencoder_path = r'finel_project_github/torch_autoencoder_final.pth'
 model_path = os.path.join(autoencoder_path)
 
