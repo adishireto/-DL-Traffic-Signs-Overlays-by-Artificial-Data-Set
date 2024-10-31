@@ -85,17 +85,6 @@ The project includes two demonstration videos:
 - Reconstructed Sign Video: Shows the remote driver’s view with fully reconstructed signs.
 
 
-Based on the code you’ve shared from `main.py`, here are some observations and necessary adjustments for the instructions:
-
-1. **Directory Setup**:
-   - The code references paths like `traffic_sign_overlays`, `finel_project_github/videos`, `finel_project_github/pytorch_multi_classification_11_09.pth`, and `finel_project_github/torch_autoencoder_final.pth`.
-   - Update the instructions to clarify these paths and where the `.pth` files should be placed.
-
-2. **Dependencies**:
-   - Make sure dependencies like `functions.py`, `video_with_mask.py`, and `reconstruct_video.py` are in the `traffic_sign_overlays` folder, as these files are imported directly in the code.
-
-
-
 # Instructions for Running the Code
 
 1. **Create a Project Directory**:
